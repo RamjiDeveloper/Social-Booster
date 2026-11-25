@@ -1,0 +1,13 @@
+node_modules/
+.env
+
+
+# {
+#   "email": "admin@socialbooster.com",
+#   "password": "YOUR_ADMIN_PASSWORD"
+# }
+
+# {
+#   "email": "customer@test.com",
+#   "password": "Test@12345"
+# }
