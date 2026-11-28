@@ -108,3 +108,126 @@ export const getAllTickets = async(req, res) => {
         });
     }
 };
+
+// Admin: Reply to Support Ticket
+export const adminReplyTicket = async(req, res) => {
+    try {
+        const { ticketId } = req.params;
+        const { message } = req.body;
+
+        if (!message || !message.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Reply message is required",
+            });
+        }
+
+        if (message.trim().length > 2000) {
+            return res.status(400).json({
+                success: false,
+                message: "Reply cannot exceed 2000 characters",
+            });
+        }
+
+        const ticket = await SupportTicket.findOne({ ticketId });
+
+        if (!ticket) {
+            return res.status(404).json({
+                success: false,
+                message: "Support ticket not found",
+            });
+        }
+
+        if (ticket.status === "Resolved") {
+            return res.status(400).json({
+                success: false,
+                message: "This ticket is already resolved",
+            });
+        }
+
+        ticket.replies.push({
+            sender: "admin",
+            message: message.trim(),
+        });
+
+        if (ticket.status === "Open") {
+            ticket.status = "In Progress";
+        }
+
+        await ticket.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin reply sent successfully",
+            ticket,
+        });
+    } catch (error) {
+        console.error("Admin Reply Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to send admin reply",
+        });
+    }
+};
+
+// Customer: Reply to Own Support Ticket
+export const customerReplyTicket = async(req, res) => {
+    try {
+        const { ticketId } = req.params;
+        const { message } = req.body;
+
+        if (!message || !message.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Reply message is required",
+            });
+        }
+
+        if (message.trim().length > 2000) {
+            return res.status(400).json({
+                success: false,
+                message: "Reply cannot exceed 2000 characters",
+            });
+        }
+
+        // Find ticket belonging to logged-in customer
+        const ticket = await SupportTicket.findOne({
+            ticketId,
+            customer: req.user._id,
+        });
+
+        if (!ticket) {
+            return res.status(404).json({
+                success: false,
+                message: "Support ticket not found",
+            });
+        }
+
+        // Add customer reply
+        ticket.replies.push({
+            sender: "customer",
+            message: message.trim(),
+        });
+
+        // Reopen ticket if it was resolved
+        if (ticket.status === "Resolved") {
+            ticket.status = "Open";
+        }
+
+        await ticket.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Customer reply sent successfully",
+            ticket,
+        });
+    } catch (error) {
+        console.error("Customer Reply Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to send customer reply",
+        });
+    }
+};

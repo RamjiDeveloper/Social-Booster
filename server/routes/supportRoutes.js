@@ -4,6 +4,8 @@ import {
     createTicket,
     getMyTickets,
     getAllTickets,
+    adminReplyTicket,
+    customerReplyTicket,
 } from "../controllers/supportController.js";
 
 import {
@@ -36,6 +38,22 @@ router.get(
     protect,
     authorize("admin"),
     getAllTickets
+);
+
+// Admin: Reply to Ticket
+router.post(
+    "/admin/:ticketId/reply",
+    protect,
+    authorize("admin"),
+    adminReplyTicket
+);
+
+// Customer: Reply to Own Ticket
+router.post(
+    "/:ticketId/reply",
+    protect,
+    authorize("customer"),
+    customerReplyTicket
 );
 
 export default router;

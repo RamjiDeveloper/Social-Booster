@@ -2,12 +2,16 @@ node_modules/
 .env
 
 
-# {
-#   "email": "admin@socialbooster.com",
-#   "password": "YOUR_ADMIN_PASSWORD"
-# }
+{
+  "email": "admin@socialbooster.com",
+  "password": "ChangeThis@Admin2026"
+}
 
-# {
-#   "email": "customer@test.com",
-#   "password": "Test@12345"
-# }
+{
+  "email": "customer@test.com",
+  "password": "Test@12345"
+}
+
+{
+  "message": "Thank you for the update. Please let me know when it is resolved."
+}
